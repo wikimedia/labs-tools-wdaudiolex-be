@@ -154,10 +154,4 @@ Run tests with:
 
 pytest
 
-Deployment
 
-Use a production-ready server like Gunicorn or uWSGI for deployment.
-
-Example (Gunicorn):
-
-gunicorn -w 4 -b 127.0.0.1:8000 run:app
