@@ -1,0 +1,10 @@
+SECRET_KEY:
+SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://<db-user>:<dbp-pass>@<hostname>/<db-name>'
+OAUTH_MWURI: https://commons.wikimedia.org/w/index.php
+OAUTh_EDIT_URI: https://test-commons.wikimedia.org/w/api.php
+CONSUMER_KEY: 
+CONSUMER_SECRET: 
+SQLALCHEMY_POOL_SIZE: 50
+SQLALCHEMY_POOL_PRE_PING: True
+SQLALCHEMY_POOL_RECYCLE: 3000
+SQLALCHEMY_POOL_TIMEOUT: 100
