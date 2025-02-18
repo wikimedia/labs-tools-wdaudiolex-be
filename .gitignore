@@ -1,2 +1,4 @@
+# Ignore Python bytecode files
 .venv
-.routes copy.py
+*.pyc
+*__pycache__/
