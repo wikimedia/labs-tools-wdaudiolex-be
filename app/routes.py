@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, current_app
+from flask import Blueprint, render_template, current_app, jsonify
+from app.utils.language_utils import get_supported_languages
 
 main_bp = Blueprint('main', __name__)
 
@@ -28,3 +29,29 @@ def home():
 
     # Render the index.html template
     return render_template('index.html', title="Welcome to WDAudioLEx")
+
+@main_bp.route('/api/languages', methods=['GET'])
+def get_languages():
+    """
+    Get all supported language codes and their labels.
+    
+    This endpoint fetches the list of all supported languages from Wikimedia Commons
+    and returns them in a JSON format with language codes as keys and their labels as values.
+    
+    ---
+    responses:
+        200:
+            description: Successfully retrieved language codes and labels
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        additionalProperties:
+                            type: string
+                        example:
+                            en: "English"
+                            fr: "Français"
+                            de: "Deutsch"
+    """
+    languages = get_supported_languages()
+    return jsonify(languages)
