@@ -7,3 +7,4 @@ venv/
 app/__pycache__
 app/utils/__pycache__
 test/__pycache__
+.pytest_cache

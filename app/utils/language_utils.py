@@ -1,6 +1,13 @@
 import requests
 from typing import Dict, List
 
+
+"""
+Language Utilities Module
+
+This module provides functionality for handling language-related operations.
+"""
+
 def get_supported_languages() -> Dict[str, str]:
     """
     Fetches and converts language codes to their corresponding labels.
