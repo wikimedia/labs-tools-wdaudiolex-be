@@ -50,5 +50,5 @@ docs/
 tests/
 ```
 
-Phase 0 is the scaffold only. Languages, matching, and OAuth writes land in
-later phases listed in [docs/TASKS.md](docs/TASKS.md).
+Phase 2 is live: languages, Commons files, and `POST /match-lexemes`.
+OAuth writes land in later phases listed in [docs/TASKS.md](docs/TASKS.md).

@@ -20,22 +20,22 @@ Check items off as they land. Details live in [BACKEND_PLAN.md](BACKEND_PLAN.md)
 
 ## Phase 1 — Languages + Commons list
 
-- [ ] `GET /languages` with `iso`, `iso3`, `qid`, `commons_category`, localized labels
-- [ ] `GET /languages/<lang_code>` accepts `ig`, `ibo`, or `Q33578`
-- [ ] `langcodes` mapping; do not copy agpb's static ISO-1-only list
-- [ ] `GET /commons/files` paginated (`lang`, `continue`, `limit`, optional `speaker`)
-- [ ] Lingua Libre filename parser + optional Commons SDC `P9533`
-- [ ] `GET /file/url/<titles>` playable URL
-- [ ] Tests for parser and language resolution (mocked Commons)
+- [x] `GET /languages` with `iso`, `iso3`, `qid`, `commons_category`, localized labels
+- [x] `GET /languages/<lang_code>` accepts `ig`, `ibo`, or `Q33578`
+- [x] `langcodes` mapping; do not copy agpb's static ISO-1-only list
+- [x] `GET /commons/files` paginated (`lang`, `continue`, `limit`, optional `speaker`)
+- [x] Lingua Libre filename parser + optional Commons SDC `P9533`
+- [x] `GET /file/url/<titles>` playable URL
+- [x] Tests for parser and language resolution (mocked Commons)
 
 ## Phase 2 — Matching
 
-- [ ] `POST /match-lexemes` language-scoped Wikidata lexeme search
-- [ ] Return **forms** with grammatical features
-- [ ] Rank exact lemma/form, then close matches
-- [ ] `already_has_audio` and `confidence` (`exact` / `close`)
-- [ ] Never match across languages
-- [ ] Tests with mocked Wikidata responses
+- [x] `POST /match-lexemes` language-scoped Wikidata lexeme search
+- [x] Return **forms** with grammatical features
+- [x] Rank exact lemma/form, then close matches
+- [x] `already_has_audio` and `confidence` (`exact` / `close`)
+- [x] Never match across languages
+- [x] Tests with mocked Wikidata responses
 
 ## Phase 3 — OAuth + write + contributions
 

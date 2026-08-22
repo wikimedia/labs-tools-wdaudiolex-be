@@ -3,7 +3,7 @@
   "info": {
     "title": "WDAudioLex API",
     "version": "0.1.0",
-    "description": "Match Lingua Libre Commons pronunciation files to Wikidata lexeme forms and add P443 statements. Phase 0 exposes /health and this spec; remaining paths land in later phases."
+    "description": "Match Lingua Libre Commons pronunciation files to Wikidata lexeme forms and add P443 statements. Phase 2 adds POST /match-lexemes."
   },
   "servers": [
     {
@@ -547,8 +547,14 @@
           "form_id": { "type": "string", "example": "L123-F1" },
           "lemma": { "type": "string" },
           "form_representation": { "type": "string" },
+          "grammatical_features": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["Q110786"]
+          },
           "confidence": { "type": "string", "enum": ["exact", "close"] },
-          "already_has_audio": { "type": "boolean" }
+          "already_has_audio": { "type": "boolean" },
+          "matched_on": { "type": "string", "enum": ["form", "lemma"] }
         }
       },
       "matchResponse": {

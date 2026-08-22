@@ -14,6 +14,10 @@ class TestSwagger(unittest.TestCase):
         self.assertEqual(payload["openapi"], "3.0.3")
         self.assertEqual(payload["info"]["title"], "WDAudioLex API")
         self.assertIn("/health", payload["paths"])
+        self.assertIn("/languages", payload["paths"])
+        self.assertIn("/commons/files", payload["paths"])
+        self.assertIn("/file/url/{titles}", payload["paths"])
+        self.assertIn("/match-lexemes", payload["paths"])
         self.assertTrue(payload["servers"][0]["url"].endswith("/api"))
 
 
