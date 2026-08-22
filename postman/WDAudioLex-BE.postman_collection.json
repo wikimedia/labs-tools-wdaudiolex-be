@@ -1,0 +1,203 @@
+{
+  "info": {
+    "name": "WDAudioLex BE",
+    "description": "Requests for the WDAudioLex Flask API. Phase 0 implements Health and Swagger Config. Other folders are the planned contract.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" },
+    { "key": "lang", "value": "ibo" },
+    { "key": "formid", "value": "L123-F1" },
+    { "key": "filename", "value": "LL-Q33578 (ibo)-Ada-ulo.wav" },
+    { "key": "ui_lang", "value": "en" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health"
+          }
+        },
+        {
+          "name": "Swagger config",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/swagger-config"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "OAuth callback",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_token\": \"\",\n  \"query_string\": \"\"\n}"
+            },
+            "url": "{{baseUrl}}/oauth-callback"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Languages",
+      "item": [
+        {
+          "name": "List languages",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/languages?ui_lang={{ui_lang}}"
+          }
+        },
+        {
+          "name": "Resolve language",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/languages/{{lang}}?ui_lang={{ui_lang}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Commons",
+      "item": [
+        {
+          "name": "List files",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/commons/files?lang={{lang}}&limit=50&ui_lang={{ui_lang}}"
+          }
+        },
+        {
+          "name": "File URL",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/file/url/{{filename}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Matching",
+      "item": [
+        {
+          "name": "Match lexemes",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lang\": \"{{lang}}\",\n  \"ui_lang\": \"{{ui_lang}}\",\n  \"files\": [\n    {\n      \"title\": \"File:{{filename}}\",\n      \"word\": \"ulo\"\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/match-lexemes"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lexeme",
+      "item": [
+        {
+          "name": "Add pronunciation",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"formid\": \"{{formid}}\",\n  \"filename\": \"{{filename}}\",\n  \"lang_wdqid\": \"Q33578\",\n  \"variety_qid\": null\n}"
+            },
+            "url": "{{baseUrl}}/lexeme/audio/add"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contributions",
+      "item": [
+        {
+          "name": "List contributions",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/contributions"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Engagement",
+      "item": [
+        {
+          "name": "My stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/stats/me"
+          }
+        },
+        {
+          "name": "Leaderboard",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/stats/leaderboard"
+          }
+        },
+        {
+          "name": "Skip file",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"File:{{filename}}\",\n  \"lang\": \"{{lang}}\"\n}"
+            },
+            "url": "{{baseUrl}}/skips"
+          }
+        },
+        {
+          "name": "Varieties",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/varieties?lang={{lang}}&ui_lang={{ui_lang}}"
+          }
+        }
+      ]
+    }
+  ]
+}

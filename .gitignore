@@ -1,10 +1,12 @@
-# Ignore Python bytecode files
+# Python
 .venv/
-*.pyc
-*__pycache__/
-config.yaml
 venv/
-app/utils/__pycache__
-test/__pycache__
+__pycache__/
+*.pyc
 .pytest_cache
-app/__pycache__
+.tox
+
+# Local config and database
+.env
+config.yaml
+service/app.sqlite

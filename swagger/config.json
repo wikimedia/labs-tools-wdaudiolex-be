@@ -1,0 +1,660 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "WDAudioLex API",
+    "version": "0.1.0",
+    "description": "Match Lingua Libre Commons pronunciation files to Wikidata lexeme forms and add P443 statements. Phase 0 exposes /health and this spec; remaining paths land in later phases."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api"
+    }
+  ],
+  "tags": [
+    { "name": "health", "description": "Service liveness" },
+    { "name": "auth", "description": "Wikidata MediaWiki OAuth" },
+    { "name": "language", "description": "Language codes, Q-ids, and Commons categories" },
+    { "name": "commons", "description": "Lingua Libre files on Wikimedia Commons" },
+    { "name": "matching", "description": "Match audio filenames to lexeme forms" },
+    { "name": "lexeme", "description": "Write pronunciation audio to Wikidata" },
+    { "name": "contribution", "description": "Local contribution history" },
+    { "name": "stats", "description": "Personal stats and leaderboard" },
+    { "name": "skips", "description": "Hide a file for the current user" },
+    { "name": "variety", "description": "Suggested P5237 pronunciation varieties" },
+    { "name": "user", "description": "User preferences" }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Liveness check",
+        "responses": {
+          "200": {
+            "description": "Service is up",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/health" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Start MediaWiki OAuth (Phase 3)",
+        "responses": {
+          "200": {
+            "description": "Redirect URL and request token",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/authLogin" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/oauth-callback": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Exchange OAuth verifier for a JWT (Phase 3)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/oauthCallbackRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JWT and username",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/authSession" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Invalidate the current token (Phase 3)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Logged out"
+          }
+        }
+      }
+    },
+    "/languages": {
+      "get": {
+        "tags": ["language"],
+        "summary": "List languages with Commons category mapping (Phase 1)",
+        "parameters": [
+          { "$ref": "#/components/parameters/uiLang" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Localized language list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/language" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/languages/{lang_code}": {
+      "get": {
+        "tags": ["language"],
+        "summary": "Resolve ig, ibo, or Q33578 (Phase 1)",
+        "parameters": [
+          {
+            "name": "lang_code",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/uiLang" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resolved language",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/language" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/commons/files": {
+      "get": {
+        "tags": ["commons"],
+        "summary": "Paginated Lingua Libre files for a language (Phase 1)",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "iso, iso3, or Wikidata Q-id"
+          },
+          {
+            "name": "continue",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 50, "maximum": 100 }
+          },
+          {
+            "name": "speaker",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/uiLang" }
+        ],
+        "responses": {
+          "200": {
+            "description": "File page",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/commonsFilePage" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/file/url/{titles}": {
+      "get": {
+        "tags": ["commons"],
+        "summary": "Playable Commons file URL (Phase 1)",
+        "parameters": [
+          {
+            "name": "titles",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File title and URL",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/commonsFileUrl" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/match-lexemes": {
+      "post": {
+        "tags": ["matching"],
+        "summary": "Match files to lexeme forms in one language (Phase 2)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/matchRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ranked form candidates",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/matchResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lexeme/audio/add": {
+      "post": {
+        "tags": ["lexeme"],
+        "summary": "Write P443 on a form, then store a contribution (Phase 3)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/addAudioRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wikidata revision and local contribution",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/addAudioResponse" }
+              }
+            }
+          },
+          "400": { "description": "Guard rejected the edit" },
+          "401": { "description": "Missing or invalid token" }
+        }
+      }
+    },
+    "/contributions": {
+      "get": {
+        "tags": ["contribution"],
+        "summary": "List local contributions (Phase 3)",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "lang_code",
+            "in": "query",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contribution rows",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/contribution" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/me": {
+      "get": {
+        "tags": ["stats"],
+        "summary": "Personal contribution counts (Phase 5)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Counts for the current user",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/userStats" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats/leaderboard": {
+      "get": {
+        "tags": ["stats"],
+        "summary": "Top contributors (Phase 5)",
+        "responses": {
+          "200": {
+            "description": "Public username leaderboard",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/leaderboardRow" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/skips": {
+      "post": {
+        "tags": ["skips"],
+        "summary": "Hide a Commons file for the current user (Phase 5)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/skipRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "File skipped" }
+        }
+      }
+    },
+    "/varieties": {
+      "get": {
+        "tags": ["variety"],
+        "summary": "Suggested P5237 items for a language (Phase 5)",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          { "$ref": "#/components/parameters/uiLang" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Variety candidates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/variety" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["user"],
+        "summary": "Get a user (Phase 3)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/user" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["user"],
+        "summary": "Update preferred languages (Phase 3)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pref_langs": { "type": "string", "example": "en,fr,ibo" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated user",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/user" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "parameters": {
+      "uiLang": {
+        "name": "ui_lang",
+        "in": "query",
+        "schema": { "type": "string", "example": "fr" },
+        "description": "UI language for labels. Falls back to Accept-Language, then en."
+      }
+    },
+    "schemas": {
+      "health": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "ok" },
+          "service": { "type": "string", "example": "wdaudiolex-be" },
+          "version": { "type": "string", "example": "0.1.0" }
+        }
+      },
+      "authLogin": {
+        "type": "object",
+        "properties": {
+          "redirect_string": { "type": "string" },
+          "request_token": { "type": "string" }
+        }
+      },
+      "oauthCallbackRequest": {
+        "type": "object",
+        "required": ["request_token", "query_string"],
+        "properties": {
+          "request_token": { "type": "string" },
+          "query_string": { "type": "string" }
+        }
+      },
+      "authSession": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string" },
+          "username": { "type": "string" },
+          "pref_langs": { "type": "string" }
+        }
+      },
+      "language": {
+        "type": "object",
+        "properties": {
+          "iso": { "type": "string", "example": "ig" },
+          "iso3": { "type": "string", "example": "ibo" },
+          "qid": { "type": "string", "example": "Q33578" },
+          "label": { "type": "string", "example": "Igbo" },
+          "commons_category": {
+            "type": "string",
+            "example": "Lingua Libre pronunciation-ibo"
+          }
+        }
+      },
+      "commonsFile": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "File:LL-Q33578 (ibo)-Ada-ulo.wav"
+          },
+          "url": { "type": "string" },
+          "iso3": { "type": "string", "example": "ibo" },
+          "lang_qid": { "type": "string", "example": "Q33578" },
+          "speaker": { "type": "string", "example": "Ada" },
+          "word": { "type": "string", "example": "ulo" },
+          "transcription": { "type": "string", "nullable": true }
+        }
+      },
+      "commonsFilePage": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/commonsFile" }
+          },
+          "continue": { "type": "string", "nullable": true }
+        }
+      },
+      "commonsFileUrl": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "url": { "type": "string" }
+        }
+      },
+      "matchRequest": {
+        "type": "object",
+        "required": ["lang", "files"],
+        "properties": {
+          "lang": { "type": "string", "example": "ibo" },
+          "ui_lang": { "type": "string", "example": "fr" },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string" },
+                "word": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "matchCandidate": {
+        "type": "object",
+        "properties": {
+          "lexeme_id": { "type": "string", "example": "L123" },
+          "form_id": { "type": "string", "example": "L123-F1" },
+          "lemma": { "type": "string" },
+          "form_representation": { "type": "string" },
+          "confidence": { "type": "string", "enum": ["exact", "close"] },
+          "already_has_audio": { "type": "boolean" }
+        }
+      },
+      "matchResponse": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string" },
+                "word": { "type": "string" },
+                "url": { "type": "string" },
+                "candidates": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/matchCandidate" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "addAudioRequest": {
+        "type": "object",
+        "required": ["formid", "filename", "lang_wdqid"],
+        "properties": {
+          "formid": { "type": "string", "example": "L123-F1" },
+          "filename": {
+            "type": "string",
+            "example": "LL-Q33578 (ibo)-Ada-ulo.wav"
+          },
+          "lang_wdqid": { "type": "string", "example": "Q33578" },
+          "variety_qid": { "type": "string", "nullable": true }
+        }
+      },
+      "addAudioResponse": {
+        "type": "object",
+        "properties": {
+          "lexeme_id": { "type": "string" },
+          "form_id": { "type": "string" },
+          "revision_id": { "type": "string" },
+          "contribution_id": { "type": "integer" },
+          "progress": {
+            "type": "object",
+            "properties": {
+              "matched": { "type": "integer" },
+              "skipped": { "type": "integer" },
+              "failed": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "contribution": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "wd_item": { "type": "string" },
+          "form_id": { "type": "string" },
+          "username": { "type": "string" },
+          "lang_code": { "type": "string" },
+          "audio_filename": { "type": "string" },
+          "variety_qid": { "type": "string", "nullable": true },
+          "edit_type": { "type": "string" },
+          "revision_id": { "type": "string" },
+          "date": { "type": "string", "format": "date-time" }
+        }
+      },
+      "user": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "username": { "type": "string" },
+          "pref_langs": { "type": "string" }
+        }
+      },
+      "userStats": {
+        "type": "object",
+        "properties": {
+          "username": { "type": "string" },
+          "total": { "type": "integer" },
+          "languages": { "type": "integer" },
+          "days_active": { "type": "integer" }
+        }
+      },
+      "leaderboardRow": {
+        "type": "object",
+        "properties": {
+          "username": { "type": "string" },
+          "total": { "type": "integer" }
+        }
+      },
+      "skipRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string" },
+          "lang": { "type": "string" }
+        }
+      },
+      "variety": {
+        "type": "object",
+        "properties": {
+          "qid": { "type": "string" },
+          "label": { "type": "string" }
+        }
+      }
+    }
+  }
+}
