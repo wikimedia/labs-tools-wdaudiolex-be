@@ -113,7 +113,11 @@ Password `clientlogin` is out of scope.
 ## i18n (backend contract)
 
 - Accept `ui_lang` or `Accept-Language` on read endpoints.
-- Resolve codes with `langcodes`.
+- Resolve codes with `langcodes` (and `language-data`), not a static ISO-1 list.
+  Commons / Lingua Libre categories use **ISO 639-3** (`ibo`). Wikidata lexeme
+  search uses **ISO 639-1** when it exists (`ig`). `from_iso3()` converts
+  639-3 → name, localized label, and 639-1. `wikidata_lang_code()` is what
+  matching sends to Wikidata. Languages with no 639-1 (e.g. `dag`) stay on 639-3.
 - Wikidata labels: `wikibase:language "{ui_lang},en"`.
 - Error `message` keys stay English in v1. React owns UI chrome.
 

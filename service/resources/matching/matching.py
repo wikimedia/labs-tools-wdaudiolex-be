@@ -2,16 +2,16 @@ from flask import abort, request
 from flask_restful import Resource
 
 from service.resources.wikidata.utils import get_lexemes, search_lexeme_ids
-from service.utils.languages import LanguageNotResolved, resolve_language
+from service.utils.languages import (
+    LanguageNotResolved,
+    resolve_language,
+    wikidata_lang_code,
+)
 from service.utils.ll_filename import parse_ll_filename
 from service.utils.matching import candidates_from_lexeme, sort_candidates
 from service.utils.request_lang import get_ui_lang
 
 MAX_FILES = 25
-
-
-def _search_lang(language):
-    return language.get("iso") or language.get("iso3")
 
 
 def match_one_file(file_item, language):
@@ -30,7 +30,7 @@ def match_one_file(file_item, language):
     if not word:
         return result
 
-    lang_code = _search_lang(language)
+    lang_code = wikidata_lang_code(language)
     found = search_lexeme_ids(word, lang_code)
     if isinstance(found, dict) and found.get("error"):
         result["error"] = found["error"]

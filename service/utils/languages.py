@@ -46,6 +46,61 @@ def display_label(code, ui_lang="en", fallback=None):
         return fallback or code
 
 
+def from_iso3(iso3_code, ui_lang="en"):
+    """Convert a Lingua Libre / Commons ISO 639-3 code for Wikidata.
+
+    Commons categories use 639-3 (e.g. ibo). Wikidata lexeme search and
+    lemma language keys usually want 639-1 (e.g. ig) when it exists.
+
+    Returns iso (639-1 or None), iso3, English name, and localized label.
+    Uses langcodes + language-data (same job as pyiso639, with i18n labels).
+    """
+    raw = (iso3_code or "").strip()
+    if not raw:
+        raise LanguageNotResolved("ISO 639-3 code is required")
+    try:
+        iso1, iso3 = codes_from_tag(raw)
+    except (LanguageTagError, ValueError) as error:
+        raise LanguageNotResolved(
+            f"Unsupported ISO 639-3 code: {raw}"
+        ) from error
+    if not iso3:
+        raise LanguageNotResolved(f"Could not derive ISO 639-3 from {raw}")
+    name = display_label(iso1 or iso3, "en", fallback=iso3)
+    label = display_label(iso1 or iso3, ui_lang, fallback=name)
+    return {
+        "iso": iso1,
+        "iso3": iso3,
+        "name": name,
+        "label": label,
+    }
+
+
+def language_labels(iso3_code, ui_langs=None):
+    """Return display labels for an ISO 639-3 code in one or more UI languages."""
+    if ui_langs is None:
+        ui_langs = ["en"]
+    converted = from_iso3(iso3_code, "en")
+    code = converted["iso"] or converted["iso3"]
+    labels = {}
+    for ui_lang in ui_langs:
+        labels[ui_lang] = display_label(
+            code, ui_lang, fallback=converted["name"]
+        )
+    return labels
+
+
+def wikidata_lang_code(language):
+    """Language tag Wikidata expects: ISO 639-1 when present, else 639-3."""
+    iso = language.get("iso") if isinstance(language, dict) else None
+    iso3 = language.get("iso3") if isinstance(language, dict) else None
+    if iso:
+        return iso
+    if iso3:
+        return from_iso3(iso3)["iso"] or iso3
+    raise LanguageNotResolved("Language has no ISO 639-1 or 639-3 code")
+
+
 def _cache_get(ui_lang):
     entry = _INDEX_CACHE.get(ui_lang)
     if not entry:

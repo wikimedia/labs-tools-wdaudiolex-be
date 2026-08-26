@@ -3,11 +3,14 @@ import unittest
 from service.utils.languages import (
     LanguageNotResolved,
     codes_from_tag,
+    from_iso3,
+    language_labels,
     language_record,
     list_languages,
     reset_language_cache,
     resolve_language,
     set_language_index_for_tests,
+    wikidata_lang_code,
 )
 
 
@@ -52,7 +55,42 @@ class TestLanguageResolver(unittest.TestCase):
         self.assertEqual(len(languages), 2)
         self.assertEqual(languages[0]["iso3"], "ibo")
 
-    def test_empty_code(self):
+    def test_from_iso3_for_wikidata(self):
+        converted = from_iso3("ibo", "fr")
+        self.assertEqual(converted["iso"], "ig")
+        self.assertEqual(converted["iso3"], "ibo")
+        self.assertEqual(converted["name"], "Igbo")
+        self.assertTrue(converted["label"])
+
+    def test_from_iso3_without_639_1(self):
+        converted = from_iso3("dag")
+        self.assertEqual(converted["iso3"], "dag")
+        self.assertIsNone(converted["iso"])
+        self.assertTrue(converted["name"])
+
+    def test_language_labels(self):
+        labels = language_labels("ibo", ["en", "fr"])
+        self.assertIn("en", labels)
+        self.assertIn("fr", labels)
+        self.assertEqual(labels["en"], "Igbo")
+
+    def test_wikidata_lang_code_prefers_639_1(self):
+        self.assertEqual(
+            wikidata_lang_code({"iso": "ig", "iso3": "ibo"}),
+            "ig",
+        )
+        self.assertEqual(
+            wikidata_lang_code({"iso": None, "iso3": "ibo"}),
+            "ig",
+        )
+        self.assertEqual(
+            wikidata_lang_code({"iso": None, "iso3": "dag"}),
+            "dag",
+        )
+
+    def test_from_iso3_rejects_empty(self):
+        with self.assertRaises(LanguageNotResolved):
+            from_iso3("")
         with self.assertRaises(LanguageNotResolved):
             resolve_language("  ", "en")
 

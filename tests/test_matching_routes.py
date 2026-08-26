@@ -60,6 +60,24 @@ class TestMatchLexemesRoute(unittest.TestCase):
     @patch("service.resources.matching.matching.get_lexemes")
     @patch("service.resources.matching.matching.search_lexeme_ids")
     @patch("service.resources.matching.matching.resolve_language")
+    def test_iso3_only_converts_to_639_1(
+        self, mock_resolve, mock_search, mock_get
+    ):
+        mock_resolve.return_value = language_record(
+            None, "ibo", "Q33578", "Igbo"
+        )
+        mock_search.return_value = []
+        mock_get.return_value = []
+        response = self.client.post("/api/match-lexemes", json={
+            "lang": "ibo",
+            "files": [{"word": "ulo"}],
+        })
+        self.assertEqual(response.status_code, 200)
+        mock_search.assert_called_once_with("ulo", "ig")
+
+    @patch("service.resources.matching.matching.get_lexemes")
+    @patch("service.resources.matching.matching.search_lexeme_ids")
+    @patch("service.resources.matching.matching.resolve_language")
     def test_drops_other_language_lexemes(
         self, mock_resolve, mock_search, mock_get
     ):
