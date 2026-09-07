@@ -1,17 +1,10 @@
 {
   "info": {
+    "_postman_id": "fcb7167d-0378-4e73-be76-c8807d566b4c",
     "name": "WDAudioLex BE",
-    "description": "Requests for the WDAudioLex Flask API. Phase 0 implements Health and Swagger Config. Other folders are the planned contract.",
+    "description": "WDAudioLex Flask API. Import this file (not the environment file) into the Postman extension.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "variable": [
-    { "key": "baseUrl", "value": "http://localhost:5000/api" },
-    { "key": "token", "value": "" },
-    { "key": "lang", "value": "ibo" },
-    { "key": "formid", "value": "L123-F1" },
-    { "key": "filename", "value": "LL-Q33578 (ibo)-Ada-ulo.wav" },
-    { "key": "ui_lang", "value": "en" }
-  ],
   "item": [
     {
       "name": "Health",
@@ -21,16 +14,34 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/health"
-          }
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
         },
         {
           "name": "Swagger config",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/swagger-config"
-          }
+            "url": {
+              "raw": "{{baseUrl}}/swagger-config",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "swagger-config"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -41,30 +52,75 @@
           "name": "Login",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/auth/login"
-          }
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
         },
         {
           "name": "OAuth callback",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/oauth-callback",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "oauth-callback"
+              ]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"request_token\": \"\",\n  \"query_string\": \"\"\n}"
-            },
-            "url": "{{baseUrl}}/oauth-callback"
-          }
+              "raw": "{\n  \"request_token\": \"\",\n  \"query_string\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
         },
         {
           "name": "Logout",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
             ],
-            "url": "{{baseUrl}}/auth/logout"
-          }
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -75,15 +131,48 @@
           "name": "List languages",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/languages?ui_lang={{ui_lang}}"
-          }
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/languages?ui_lang={{ui_lang}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "languages"
+              ],
+              "query": [
+                {
+                  "key": "ui_lang",
+                  "value": "{{ui_lang}}"
+                }
+              ]
+            }
+          },
+          "response": []
         },
         {
           "name": "Resolve language",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/languages/{{lang}}?ui_lang={{ui_lang}}"
-          }
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/languages/{{lang}}?ui_lang={{ui_lang}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "languages",
+                "{{lang}}"
+              ],
+              "query": [
+                {
+                  "key": "ui_lang",
+                  "value": "{{ui_lang}}"
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -94,15 +183,52 @@
           "name": "List files",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/commons/files?lang={{lang}}&limit=50&ui_lang={{ui_lang}}"
-          }
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/commons/files?lang={{lang}}&limit=50&ui_lang={{ui_lang}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "commons",
+                "files"
+              ],
+              "query": [
+                {
+                  "key": "lang",
+                  "value": "{{lang}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "key": "ui_lang",
+                  "value": "{{ui_lang}}"
+                }
+              ]
+            }
+          },
+          "response": []
         },
         {
           "name": "File URL",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/file/url/{{filename}}"
-          }
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/file/url/{{filename}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "file",
+                "url",
+                "{{filename}}"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -113,13 +239,33 @@
           "name": "Match lexemes",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/match-lexemes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "match-lexemes"
+              ]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"lang\": \"{{lang}}\",\n  \"ui_lang\": \"{{ui_lang}}\",\n  \"files\": [\n    {\n      \"title\": \"File:{{filename}}\",\n      \"word\": \"ulo\"\n    }\n  ]\n}"
-            },
-            "url": "{{baseUrl}}/match-lexemes"
-          }
+              "raw": "{\n  \"lang\": \"{{lang}}\",\n  \"ui_lang\": \"{{ui_lang}}\",\n  \"files\": [\n    {\n      \"title\": \"File:{{filename}}\",\n      \"word\": \"{{word}}\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -131,15 +277,39 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
             ],
+            "url": {
+              "raw": "{{baseUrl}}/lexeme/audio/add",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lexeme",
+                "audio",
+                "add"
+              ]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"formid\": \"{{formid}}\",\n  \"filename\": \"{{filename}}\",\n  \"lang_wdqid\": \"Q33578\",\n  \"variety_qid\": null\n}"
-            },
-            "url": "{{baseUrl}}/lexeme/audio/add"
-          }
+              "raw": "{\n  \"formid\": \"{{formid}}\",\n  \"filename\": \"{{filename}}\",\n  \"lang_wdqid\": \"Q33578\",\n  \"variety_qid\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -150,54 +320,127 @@
           "name": "List contributions",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/contributions"
-          }
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/contributions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "contributions"
+              ],
+              "query": [
+                {
+                  "key": "username",
+                  "value": ""
+                },
+                {
+                  "key": "lang_code",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "Engagement",
+      "name": "Users",
       "item": [
         {
-          "name": "My stats",
+          "name": "Get user",
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
             ],
-            "url": "{{baseUrl}}/stats/me"
-          }
+            "url": {
+              "raw": "{{baseUrl}}/users/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "1"
+              ]
+            }
+          },
+          "response": []
         },
         {
-          "name": "Leaderboard",
+          "name": "Patch user",
           "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/stats/leaderboard"
-          }
-        },
-        {
-          "name": "Skip file",
-          "request": {
-            "method": "POST",
+            "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
             ],
+            "url": {
+              "raw": "{{baseUrl}}/users/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "1"
+              ]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"File:{{filename}}\",\n  \"lang\": \"{{lang}}\"\n}"
-            },
-            "url": "{{baseUrl}}/skips"
-          }
-        },
-        {
-          "name": "Varieties",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/varieties?lang={{lang}}&ui_lang={{ui_lang}}"
-          }
+              "raw": "{\n  \"pref_langs\": \"en,ibo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
         }
       ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "lang",
+      "value": "ibo"
+    },
+    {
+      "key": "formid",
+      "value": "L123-F1"
+    },
+    {
+      "key": "filename",
+      "value": "LL-Q33578 (ibo)-Igboanude-a.wav"
+    },
+    {
+      "key": "word",
+      "value": "a"
+    },
+    {
+      "key": "ui_lang",
+      "value": "en"
     }
   ]
 }

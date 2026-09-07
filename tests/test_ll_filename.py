@@ -1,6 +1,6 @@
 import unittest
 
-from service.utils.ll_filename import file_title, parse_ll_filename
+from service.utils.ll_filename import commons_media_name, file_title, parse_ll_filename
 
 
 class TestParseLlFilename(unittest.TestCase):
@@ -37,6 +37,12 @@ class TestParseLlFilename(unittest.TestCase):
     def test_file_title(self):
         self.assertEqual(file_title("sun.wav"), "File:sun.wav")
         self.assertEqual(file_title("File:sun.wav"), "File:sun.wav")
+
+    def test_commons_media_name(self):
+        self.assertEqual(
+            commons_media_name("File:LL-Q33578 (ibo)-Ada-ulo.wav"),
+            "LL-Q33578 (ibo)-Ada-ulo.wav",
+        )
 
 
 if __name__ == "__main__":

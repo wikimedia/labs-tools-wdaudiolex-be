@@ -11,6 +11,8 @@ Wikimedia Commons to Wikidata lexeme forms and adds **P443** statements.
 - Swagger UI: `http://localhost:5000/api` after the server is running
 - OpenAPI: [swagger/config.json](swagger/config.json)
 - Postman: [postman/WDAudioLex-BE.postman_collection.json](postman/WDAudioLex-BE.postman_collection.json)
+  (import this file, not the environment file). Optional env:
+  [postman/WDAudioLex-BE.postman_environment.json](postman/WDAudioLex-BE.postman_environment.json)
 
 ## Requirements
 
@@ -28,6 +30,14 @@ python create_db.py
 python app.py
 ```
 
+If port 5000 is busy:
+
+```bash
+python app.py -p 5001
+```
+
+Or set `PORT=5001` in `.env`. Then open `http://localhost:5001/api`.
+
 The API prefix is `/api`. `GET /` redirects there. `GET /api/health` is the
 liveness check.
 
@@ -39,7 +49,7 @@ pytest
 
 ## Layout
 
-```
+```bash
 app.py                 # resource registration
 common.py              # environment
 create_db.py
@@ -50,5 +60,6 @@ docs/
 tests/
 ```
 
-Phase 2 is live: languages, Commons files, and `POST /match-lexemes`.
-OAuth writes land in later phases listed in [docs/TASKS.md](docs/TASKS.md).
+Phase 3 is live: languages, Commons files, matching, OAuth, and
+`POST /lexeme/audio/add`. Quality guards and engagement APIs land in later
+phases listed in [docs/TASKS.md](docs/TASKS.md).

@@ -10,8 +10,25 @@ This application now uses token-based authentication instead of cookies/sessions
 3. The API returns a JWT. Send it as `Authorization: Bearer <token>`.
 4. `POST /api/auth/logout` invalidates the stored `temp_token`.
 
-Writes (`POST /lexeme/audio/add`, user updates, skips) require a token.
-Commons and Wikidata **reads** do not.
+Writes (`POST /lexeme/audio/add`, `PATCH /users/<id>`) require a token.
+The JWT embeds the MediaWiki OAuth access token so the backend can
+`wbcreateclaim` P443 on a lexeme form as that user. Commons and Wikidata
+**reads** do not need a token.
+
+`POST /lexeme/audio/add` body:
+
+```json
+{
+  "formid": "L123-F1",
+  "filename": "LL-Q33578 (ibo)-Ada-ulo.wav",
+  "lang_wdqid": "Q33578",
+  "variety_qid": "Q123"
+}
+```
+
+`filename` is an existing Commons file (no upload). Optional `variety_qid`
+is stored as qualifier P5237. Language is stored as qualifier P407.
+A local contribution row is written only after the P443 claim succeeds.
 
 Password `action=login` / `clientlogin` is not supported.
 

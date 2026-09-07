@@ -35,7 +35,7 @@ The React frontend is a separate app. This repo is JSON + Swagger only.
 
 ## Architecture
 
-```
+```bash
 wdaudiolex-be/
   app.py
   common.py
@@ -70,7 +70,7 @@ flowchart TD
 Prefix `/api` from env. User-Agent on every Wikimedia request.
 
 | Method | Path | Auth | Role |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | GET | `/health` | no | Liveness |
 | GET | `/auth/login` | no | OAuth redirect + request token |
 | POST | `/oauth-callback` | no | JWT |

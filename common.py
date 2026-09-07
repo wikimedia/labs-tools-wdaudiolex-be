@@ -25,7 +25,9 @@ class ENVIRONMENT:
         self.consumer_key = os.getenv("CONSUMER_KEY", "")
         self.consumer_secret = os.getenv("CONSUMER_SECRET", "")
         self.app_version = os.getenv("APP_VERSION", "0.1.0")
-        self.app_secret = os.getenv("APP_SECRET", "dev-secret-change-me")
+        self.app_secret = os.getenv(
+            "APP_SECRET", "changeme-dev-jwt-secret-key-32b"
+        )
         self.is_dev = _as_bool(os.getenv("IS_DEV"), True)
         self.dev_fe_url = os.getenv("DEV_FE_URL", "http://localhost:3000")
         self.prod_fe_url = os.getenv("PROD_FE_URL", "")
@@ -70,6 +72,11 @@ wm_commons_audio_base_url = _env.wm_commons_audio_base_url
 sparql_endpoint_url = _env.sparql_endpoint_url
 database_uri = _env.database_uri
 tool_contact = _env.tool_contact
+JWT_EXPIRY_MINUTES = 45
+
+
+def jwt_secret():
+    return app_secret or "changeme-dev-jwt-secret-key-32b"
 
 
 def swagger_server_url():

@@ -17,6 +17,14 @@ def file_title(title):
     return f"File:{name}"
 
 
+def commons_media_name(title):
+    """P443 commonsMedia value: filename without the File: prefix."""
+    name = (title or "").strip()
+    if name.lower().startswith("file:"):
+        name = name.split(":", 1)[1]
+    return name
+
+
 def parse_ll_filename(title):
     """Parse a Lingua Libre Commons filename.
 

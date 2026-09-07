@@ -5,6 +5,7 @@
 These SPARQL queries are for the **Wikidata Query Service (WDQS)** and focus on **English lexemes** (`wd:Q1860`).
 
 The work covers:
+
 - Counting English lexemes with and without pronunciation audio.
 - Retrieving English lexemes that have pronunciation audio.
 - Retrieving each lexeme's lemma, gloss, and pronunciation audio.
@@ -49,7 +50,7 @@ WHERE {
 The result contains:
 
 | Column | Meaning |
-|---|---|
+| --- | --- |
 | `totalLexemes` | Total English lexemes |
 | `lexemesWithAudio` | English lexemes with pronunciation audio |
 | `lexemesWithoutAudio` | English lexemes without pronunciation audio |
@@ -78,7 +79,7 @@ LIMIT 100
 ### Returned fields
 
 | Field | Meaning |
-|---|---|
+| --- | --- |
 | `lexemeId` | Wikidata Lexeme ID |
 | `lemma` | The English word |
 | `gloss` | English definition/gloss |
@@ -162,7 +163,7 @@ This allows an application to process lexemes in groups of 100 rather than retri
 ## Key Wikidata Properties
 
 | Property | Purpose |
-|---|---|
+| --- | --- |
 | `wd:Q1860` | English language |
 | `dct:language` | Lexeme language |
 | `wikibase:lemma` | Lexeme lemma |

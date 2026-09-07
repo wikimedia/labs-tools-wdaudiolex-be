@@ -39,14 +39,14 @@ Check items off as they land. Details live in [BACKEND_PLAN.md](BACKEND_PLAN.md)
 
 ## Phase 3 — OAuth + write + contributions
 
-- [ ] `GET /auth/login`, `POST /oauth-callback`, `POST /auth/logout`
-- [ ] JWT `Authorization: Bearer` via `require_token`
-- [ ] `POST /lexeme/audio/add` writes P443 on the form
-- [ ] Optional P5237 (and P407) qualifiers
-- [ ] Insert `ContributionModel` only after Wikidata succeeds
-- [ ] `GET /contributions` filter by username / language
-- [ ] `GET/PATCH /users/<id>`
-- [ ] Expand `AUTHENTICATION.md`
+- [x] `GET /auth/login`, `POST /oauth-callback`, `POST /auth/logout`
+- [x] JWT `Authorization: Bearer` via `require_token`
+- [x] `POST /lexeme/audio/add` writes P443 on the form
+- [x] Optional P5237 (and P407) qualifiers
+- [x] Insert `ContributionModel` only after Wikidata succeeds
+- [x] `GET /contributions` filter by username / language
+- [x] `GET/PATCH /users/<id>`
+- [x] Expand `AUTHENTICATION.md`
 
 ## Phase 4 — Duplicate / quality guards
 
