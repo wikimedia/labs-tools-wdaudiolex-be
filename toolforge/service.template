@@ -1,0 +1,4 @@
+# Installed to $HOME/service.template by toolforge/deploy.sh.
+# Toolforge reads the copy in the tool home, not this file.
+type: python3.13
+health-check-path: /api/health

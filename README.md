@@ -12,8 +12,8 @@ Wikimedia Commons to Wikidata lexeme forms and adds **P443** statements.
 - Swagger UI: `http://localhost:5000/api` after the server is running
 - OpenAPI: [swagger/config.json](swagger/config.json)
 - Postman: [postman/WDAudioLex-BE.postman_collection.json](postman/WDAudioLex-BE.postman_collection.json)
-  (import this file, not the environment file). Optional env:
-  [postman/WDAudioLex-BE.postman_environment.json](postman/WDAudioLex-BE.postman_environment.json)
+(import this file, not the environment file). Optional env:
+[postman/WDAudioLex-BE.postman_environment.json](postman/WDAudioLex-BE.postman_environment.json)
 
 ## Requirements
 
@@ -47,6 +47,12 @@ liveness check.
 ```bash
 pytest
 ```
+
+## Toolforge
+
+The API deploys: checkout in `~/www/python/src`, virtualenv in `~/www/python/venv`, and an interactive `toolforge/deploy.sh`, `python3.13`.
+
+See [toolforge/README.md](toolforge/README.md).
 
 ## Layout
 
