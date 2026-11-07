@@ -37,7 +37,7 @@ mariadb --defaults-file=$HOME/replica.my.cnf -h tools.db.svc.wikimedia.cloud
 ```
 
 ```sql
-CREATE DATABASE s12345__wdaudiolex CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE s57653__wdaudiolex CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
 Use your own credential user. The name must be `<credential user>__wdaudiolex` (two underscores).
@@ -83,14 +83,14 @@ Paste that line into `.env`. Also set:
 
 ```bash
 become wdaudiolex-be
-export DATABASE=s12345__wdaudiolex
+export DATABASE=s57653__wdaudiolex
 bash ~/www/python/src/toolforge/deploy.sh
 ```
 
 The script asks before each step:
 
 1. Stop the webservice.
-2. Dump ToolsDB into `~/wdaudiolex-db-backups/<utc-date>.sql`.
+2. Dump ToolsDB with a one-off `mariadb` job into `~/wdaudiolex-db-backups/<utc-date>.sql`. The bastion has no `mysqldump`.
 3. Tag the current checkout with that date and `git pull --ff-only`.
 4. Create `~/www/python/venv` inside the `python3.13` image, if it does not exist yet.
 5. Reinstall `requirements.txt` into that virtualenv.

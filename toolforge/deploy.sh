@@ -76,19 +76,6 @@ then
     exit 1
 fi
 
-if ! command -v mariadb-dump >/dev/null 2>&1 && ! command -v mysqldump >/dev/null 2>&1
-then
-    error "Neither mariadb-dump nor mysqldump is on PATH."
-    exit 1
-fi
-
-if command -v mariadb-dump >/dev/null 2>&1
-then
-    DUMP=mariadb-dump
-else
-    DUMP=mysqldump
-fi
-
 cd "$SRC" || exit 1
 
 info "This script deploys the WDAudioLex API as a Toolforge Python webservice.
@@ -104,12 +91,14 @@ timestamp=$(date -I -u)
 # Stop webservice
 run "toolforge webservice stop"
 
-# Backup database. The dump is mode 640 so other users on the bastion cannot read it.
-mask=$(umask)
-umask o-r
+# The login bastion does not ship mysqldump or mariadb-dump.
+# The client lives in the Toolforge mariadb image:
+# https://wikitech.wikimedia.org/wiki/Help:Toolforge/ToolsDB#Backups
 mkdir -p "$BACKUP_DIR"
-run "$DUMP --defaults-file=$HOME/replica.my.cnf -h tools.db.svc.wikimedia.cloud $DATABASE > $BACKUP_DIR/$timestamp.sql"
-umask "$mask"
+chmod 750 "$BACKUP_DIR"
+dump_cmd="umask o-r; mkdir -p \$TOOL_DATA_DIR/wdaudiolex-db-backups; mariadb-dump --defaults-file=\$TOOL_DATA_DIR/replica.my.cnf --host=tools-readonly.db.svc.wikimedia.cloud --single-transaction ${DATABASE} > \$TOOL_DATA_DIR/wdaudiolex-db-backups/${timestamp}.sql"
+run "toolforge jobs delete db-dump >/dev/null 2>&1 || true"
+run "toolforge jobs run db-dump --image mariadb --wait --command '${dump_cmd}'"
 
 # Tag current repo state, then update. --ff-only refuses a surprise merge.
 run "git tag --force $timestamp"
@@ -143,4 +132,4 @@ run "cp $SRC/toolforge/service.template $HOME/service.template"
 run "toolforge webservice start"
 
 info "Logs: \$HOME/uwsgi.log
-Health: https://wdaudiolex-be.toolforge.org/api/health"
+Health: https://wdaudiolex-api.toolforge.org/api/health"
