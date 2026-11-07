@@ -10,3 +10,5 @@ __pycache__/
 .env
 config.yaml
 service/app.sqlite
+.DS_Store
+.vscode/

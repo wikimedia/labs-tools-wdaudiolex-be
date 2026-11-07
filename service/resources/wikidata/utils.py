@@ -177,8 +177,8 @@ def add_pronunciation_audio(
                 warnings.append(f"P5237: {p5237['error']}")
             else:
                 revision_id = str(
-                    (p5237.get("pageinfo") or {}).get("lastrevid")
-                    or revision_id
+                    (p5237.get("pageinfo") or {}).
+                    get("lastrevid") or revision_id
                 )
 
     lexeme_id = formid.split("-")[0]

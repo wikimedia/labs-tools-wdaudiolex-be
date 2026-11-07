@@ -22,8 +22,9 @@ def make_api_request(url, params, headers=None):
     except Exception as error:
         return {
             "error": str(error),
-            "status_code": getattr(error, "response", None)
-            and error.response.status_code or 503,
+            "status_code": (
+                getattr(error, "response", None) and error.response.status_code
+            ) or 503,
         }
 
 

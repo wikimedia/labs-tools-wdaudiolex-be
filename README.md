@@ -7,7 +7,8 @@ Wikimedia Commons to Wikidata lexeme forms and adds **P443** statements.
 
 - [Backend plan](docs/BACKEND_PLAN.md)
 - [Phase tasks](docs/TASKS.md)
-- [Authentication](AUTHENTICATION.md)
+- [Authentication](docs/AUTHENTICATION.md)
+- [Wikidata Lexeme Pronunciation Queries](docs/wikidata_lexeme_pronunciation_queries.md)
 - Swagger UI: `http://localhost:5000/api` after the server is running
 - OpenAPI: [swagger/config.json](swagger/config.json)
 - Postman: [postman/WDAudioLex-BE.postman_collection.json](postman/WDAudioLex-BE.postman_collection.json)
