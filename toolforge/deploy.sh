@@ -9,7 +9,6 @@
 
 PYTHON_TYPE=python3.13
 SRC="${HOME}/www/python/src"
-VENV="${HOME}/www/python/venv"
 BACKUP_DIR="${HOME}/wdaudiolex-db-backups"
 
 run() {
@@ -40,10 +39,6 @@ error() {
 
 preview() {
     echo -e "\e[1;36m$*\e[0m"
-}
-
-pip() {
-    toolforge webservice "$PYTHON_TYPE" shell -- "$VENV/bin/pip" "$@"
 }
 
 if [[ -z ${DATABASE:-} ]]
@@ -113,26 +108,14 @@ run "toolforge jobs run db-dump --image mariadb --wait --command '${dump_cmd}'"
 run "git tag --force $timestamp"
 run "git pull --ff-only"
 
-# The virtualenv must be created inside the webservice image. A venv built
-# on the bastion will not load in the python3.13 pod.
-if [[ ! -x "$VENV/bin/pip" ]]
-then
-    info "No virtualenv at $VENV yet. Creating one inside the ${PYTHON_TYPE} image."
-    run "toolforge webservice $PYTHON_TYPE shell -- bash -lc 'python3 -m venv ~/www/python/venv && ~/www/python/venv/bin/pip install --upgrade pip wheel'"
-fi
-
-# Clear Python packages
-if [[ $(pip freeze) ]]
-then
-    # Keep this quoted so the package list is not expanded into the prompt.
-    run 'pip uninstall -y $(pip freeze)'
-fi
-
-# Install Python packages
-run "pip install -r $SRC/requirements.txt"
+# toolforge webservice parses every leading dash as its own option, even
+# after --. `bash -lc` becomes --last=c, and `pip install -r` becomes
+# --replicas. The flags stay inside these scripts; only the path is passed.
+info "Installing Python packages inside the ${PYTHON_TYPE} image."
+run "toolforge webservice $PYTHON_TYPE shell -- bash $SRC/toolforge/bootstrap-venv.sh"
 
 # Create any missing tables. create_all does not alter existing columns.
-run "toolforge webservice $PYTHON_TYPE shell -- bash -lc 'cd ~/www/python/src && ~/www/python/venv/bin/python create_db.py'"
+run "toolforge webservice $PYTHON_TYPE shell -- bash $SRC/toolforge/create-db.sh"
 
 # Pull may have changed the template. Install that copy before start.
 run "cp $SRC/toolforge/service.template $HOME/service.template"

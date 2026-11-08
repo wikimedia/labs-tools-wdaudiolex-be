@@ -93,16 +93,15 @@ The script asks before each step:
 2. Stop the webservice when one is already running.
 3. Dump ToolsDB with a one-off `mariadb` job into `~/wdaudiolex-db-backups/<utc-date>.sql`. The bastion has no `mysqldump`.
 4. Tag the current checkout with that date and `git pull --ff-only`.
-5. Create `~/www/python/venv` inside the `python3.13` image, if it does not exist yet.
-6. Reinstall `requirements.txt` into that virtualenv.
-7. Run `create_db.py` (`db.create_all()` only adds missing tables).
-8. Copy `service.template` again, then start the webservice.
+5. Run `toolforge/bootstrap-venv.sh` inside the `python3.13` image. It rebuilds `~/www/python/venv` and installs `requirements.txt`.
+6. Run `toolforge/create-db.sh` in that same image. `create_all()` only adds missing tables.
+7. Copy `service.template` again, then start the webservice.
 
 Check:
 
 ```bash
 tail -f ~/uwsgi.log
-curl -sS https://wdaudiolex-be.toolforge.org/api/health
+curl -sS https://wdaudiolex-api.toolforge.org/api/health
 ```
 
 A healthy response is `{"status":"ok","service":"wdaudiolex-be",...}`.
@@ -110,6 +109,7 @@ A healthy response is `{"status":"ok","service":"wdaudiolex-be",...}`.
 ## Files
 
 - `deploy.sh` deploys one step at a time.
+- `bootstrap-venv.sh` and `create-db.sh` run inside the webservice image.
 - `service.template` selects the `python3.13` image and checks `/api/health`.
 - `env.example` is the production `.env` skeleton.
 
