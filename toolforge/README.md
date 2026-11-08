@@ -89,14 +89,14 @@ bash ~/www/python/src/toolforge/deploy.sh
 
 The script asks before each step:
 
-1. Stop the webservice.
-2. Dump ToolsDB with a one-off `mariadb` job into `~/wdaudiolex-db-backups/<utc-date>.sql`. The bastion has no `mysqldump`.
-3. Tag the current checkout with that date and `git pull --ff-only`.
-4. Create `~/www/python/venv` inside the `python3.13` image, if it does not exist yet.
-5. Reinstall `requirements.txt` into that virtualenv.
-6. Run `create_db.py` (`db.create_all()` only adds missing tables).
-7. Copy `service.template` to `~/service.template`.
-8. Start the webservice.
+1. Copy `service.template` to `~/service.template`. Toolforge will not stop or start without that file.
+2. Stop the webservice when one is already running.
+3. Dump ToolsDB with a one-off `mariadb` job into `~/wdaudiolex-db-backups/<utc-date>.sql`. The bastion has no `mysqldump`.
+4. Tag the current checkout with that date and `git pull --ff-only`.
+5. Create `~/www/python/venv` inside the `python3.13` image, if it does not exist yet.
+6. Reinstall `requirements.txt` into that virtualenv.
+7. Run `create_db.py` (`db.create_all()` only adds missing tables).
+8. Copy `service.template` again, then start the webservice.
 
 Check:
 

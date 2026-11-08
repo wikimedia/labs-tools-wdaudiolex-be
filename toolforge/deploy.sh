@@ -88,8 +88,17 @@ which Toolforge no longer offers. There is no Celery worker and no npm build."
 
 timestamp=$(date -I -u)
 
-# Stop webservice
-run "toolforge webservice stop"
+# Toolforge refuses stop and start until it knows the image. The file it
+# reads is $HOME/service.template, which does not exist on the first deploy.
+run "cp $SRC/toolforge/service.template $HOME/service.template"
+
+webservice_status=$(toolforge webservice status 2>&1 || true)
+if [[ $webservice_status == *[Nn]ot\ running* ]] || [[ $webservice_status == *no\ webservice* ]]
+then
+    info "No webservice is running yet, so there is nothing to stop."
+else
+    run "toolforge webservice stop"
+fi
 
 # The login bastion does not ship mysqldump or mariadb-dump.
 # The client lives in the Toolforge mariadb image:
@@ -125,7 +134,7 @@ run "pip install -r $SRC/requirements.txt"
 # Create any missing tables. create_all does not alter existing columns.
 run "toolforge webservice $PYTHON_TYPE shell -- bash -lc 'cd ~/www/python/src && ~/www/python/venv/bin/python create_db.py'"
 
-# Toolforge reads $HOME/service.template, not the copy in the git checkout.
+# Pull may have changed the template. Install that copy before start.
 run "cp $SRC/toolforge/service.template $HOME/service.template"
 
 # Start webservice
