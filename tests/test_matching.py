@@ -29,6 +29,12 @@ class TestCandidatesFromLexeme(unittest.TestCase):
             "id": "L123",
             "language": "Q33578",
             "lemmas": {"ig": {"language": "ig", "value": "ulo"}},
+            "senses": [{
+                "glosses": {
+                    "ig": {"language": "ig", "value": "house"},
+                    "en": {"language": "en", "value": "a house"},
+                },
+            }],
             "forms": [
                 {
                     "id": "L123-F1",
@@ -64,6 +70,9 @@ class TestCandidatesFromLexeme(unittest.TestCase):
         self.assertEqual(candidates[1]["form_id"], "L123-F2")
         self.assertTrue(candidates[1]["already_has_audio"])
         self.assertEqual(candidates[0]["grammatical_features"], ["Q110786"])
+        self.assertEqual(candidates[0]["description"], "house")
+        self.assertEqual(candidates[0]["lemma_language"], "ig")
+        self.assertEqual(candidates[0]["language_qid"], "Q33578")
 
     def test_lemma_fallback(self):
         lexeme = {

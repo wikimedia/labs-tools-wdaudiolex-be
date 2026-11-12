@@ -37,13 +37,41 @@ def form_has_audio(form):
     return bool(claims.get("P443"))
 
 
-def lemma_value(lexeme, lang_code):
+def _lemma_entry(lexeme, lang_code):
     lemmas = lexeme.get("lemmas") or {}
     if lang_code and lang_code in lemmas:
-        return lemmas[lang_code].get("value")
+        return lemmas[lang_code]
     if lemmas:
-        return next(iter(lemmas.values())).get("value")
-    return None
+        return next(iter(lemmas.values()))
+    return {}
+
+
+def lemma_value(lexeme, lang_code):
+    return (_lemma_entry(lexeme, lang_code) or {}).get("value")
+
+
+def lemma_language(lexeme, lang_code):
+    entry = _lemma_entry(lexeme, lang_code) or {}
+    return entry.get("language") or None
+
+
+def lexeme_description(lexeme, lang_code):
+    """First sense gloss, preferring the lexeme language, then any gloss."""
+    preferred = None
+    fallback = None
+    for sense in lexeme.get("senses") or []:
+        glosses = sense.get("glosses") or {}
+        if lang_code and lang_code in glosses:
+            value = (glosses[lang_code] or {}).get("value")
+            if value and preferred is None:
+                preferred = value
+        for item in glosses.values():
+            value = (item or {}).get("value")
+            if value and fallback is None:
+                fallback = value
+        if preferred:
+            break
+    return preferred or fallback
 
 
 def form_representation(form, lang_code):
@@ -104,6 +132,9 @@ def candidates_from_lexeme(lexeme, word, language_qid, lang_code):
             "lexeme_id": lexeme.get("id"),
             "form_id": form.get("id"),
             "lemma": lemma,
+            "lemma_language": lemma_language(lexeme, lang_code),
+            "description": lexeme_description(lexeme, lang_code),
+            "language_qid": lexeme.get("language"),
             "form_representation": form_representation(form, lang_code),
             "grammatical_features": form.get("grammaticalFeatures") or [],
             "confidence": confidence,

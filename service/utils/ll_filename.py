@@ -25,6 +25,14 @@ def commons_media_name(title):
     return name
 
 
+def display_word(word):
+    """Drop a leading apostrophe that Lingua Libre sometimes puts on the word."""
+    if word is None:
+        return None
+    cleaned = re.sub(r"^['\u2018\u2019\u201b\u2032]+", "", str(word)).strip()
+    return cleaned or str(word).strip()
+
+
 def parse_ll_filename(title):
     """Parse a Lingua Libre Commons filename.
 
@@ -51,6 +59,7 @@ def parse_ll_filename(title):
     else:
         speaker, word = None, remainder
 
+    word = display_word(word)
     return {
         "title": file_title(basename),
         "lang_qid": f"Q{match.group(1)}",

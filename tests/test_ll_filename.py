@@ -22,6 +22,12 @@ class TestParseLlFilename(unittest.TestCase):
         self.assertEqual(parsed["word"], "sun")
         self.assertEqual(parsed["lang_qid"], "Q1860")
 
+    def test_leading_apostrophe_is_not_part_of_the_word(self):
+        parsed = parse_ll_filename("LL-Q1860 (eng)-Wodencafe-'all.wav")
+        self.assertEqual(parsed["word"], "all")
+        self.assertEqual(parsed["normalized_word"], "all")
+        self.assertEqual(parsed["speaker"], "Wodencafe")
+
     def test_word_with_space(self):
         parsed = parse_ll_filename(
             "LL-Q9288 (heb)-Ijon-שולמית הראבן.wav"
