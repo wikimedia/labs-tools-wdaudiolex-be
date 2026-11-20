@@ -5,8 +5,9 @@ This application now uses token-based authentication instead of cookies/sessions
 ## TL:DR
 
 1. `GET /api/auth/login` returns `redirect_string` and `request_token`.
-2. The frontend sends the user to Wikimedia, then `POST /api/oauth-callback`
-   with the request token and the callback query string.
+2. The frontend sends the user to Wikimedia. Wikidata returns the browser to
+   the frontend `/oauth-callback`, which `POST`s `/api/oauth-callback` with
+   the request token and the callback query string.
 3. The API returns a JWT. Send it as `Authorization: Bearer <token>`.
 4. `POST /api/auth/logout` invalidates the stored `temp_token`.
 
@@ -33,7 +34,9 @@ A local contribution row is written only after the P443 claim succeeds.
 Password `action=login` / `clientlogin` is not supported.
 
 OAuth consumer: **Wikidata**, so `wbcreateclaim` can add P443 on a lexeme form.
-Set `CONSUMER_KEY` and `CONSUMER_SECRET` in `.env`.
+Set `CONSUMER_KEY` and `CONSUMER_SECRET` in `.env`. The consumer callback
+already registered on Wikidata is
+`https://wdaudiolex-api.toolforge.org/api/oauth-callback`. Leave it there.
 
 ## Authentication Flow
 
@@ -51,6 +54,22 @@ Returns:
 ```
 
 ### 2. OAuth Callback
+
+Wikidata's Allow button sends the browser to the registered callback,
+`GET /api/oauth-callback?oauth_verifier=...&oauth_token=...`. That GET
+redirects to the frontend `/oauth-callback` with the same query string.
+The frontend reads `oauth_token` and `oauth_verifier` and POSTs them,
+together with the request token stored before the redirect.
+
+**GET** `/api/oauth-callback`
+
+This is the Wikidata consumer callback. The response is a `302` to
+`{frontend origin}/oauth-callback` with the same query string. The
+request token lives in the browser, so this GET redirects and leaves the
+exchange to the POST below. A missing verifier is the frontend's error.
+`DEV_FE_URL` is used when `IS_DEV=true`; otherwise `PROD_FE_URL`. On
+Toolforge, `IS_DEV=false` so the browser returns to
+`https://wdaudiolex.toolforge.org/oauth-callback`.
 
 **POST** `/api/oauth-callback`
 

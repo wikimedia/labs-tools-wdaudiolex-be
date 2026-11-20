@@ -1,9 +1,10 @@
 import json
 from datetime import datetime, timedelta, timezone
+from urllib.parse import urlsplit
 
 import jwt
 import mwoauth
-from flask import abort, jsonify, make_response, request
+from flask import abort, jsonify, make_response, redirect, request
 from flask_restful import Resource, fields, marshal_with, reqparse
 
 from common import (
@@ -11,6 +12,7 @@ from common import (
     auth_base_url,
     consumer_key,
     consumer_secret,
+    frontend_origin,
     jwt_secret,
 )
 from service import db
@@ -68,7 +70,32 @@ class AuthGet(Resource):
         }, 200
 
 
+def _frontend_callback_location(query_string):
+    """Send the browser to the frontend. The request token stays there."""
+    origin = frontend_origin()
+    parts = urlsplit(origin)
+    scheme_ok = parts.scheme in ("http", "https")
+    host_ok = bool(parts.hostname) and not parts.username and not parts.password
+    if not scheme_ok or not host_ok or parts.query or parts.fragment:
+        abort(503, "Frontend URL is not configured")
+    if any(char in query_string for char in ("\r", "\n", "\x00")):
+        abort(400, "Invalid OAuth callback query")
+    location = f"{origin}/oauth-callback"
+    if query_string:
+        location = f"{location}?{query_string}"
+    return location
+
+
 class AuthCallBackPost(Resource):
+    def get(self):
+        try:
+            query_string = request.query_string.decode("utf-8")
+        except UnicodeDecodeError:
+            abort(400, "Invalid OAuth callback query")
+        response = redirect(_frontend_callback_location(query_string), code=302)
+        response.headers["Cache-Control"] = "no-store"
+        return response
+
     @marshal_with(auth_fields)
     def post(self):
         args = callback_args.parse_args()

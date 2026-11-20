@@ -74,7 +74,7 @@ Paste that line into `.env`. Also set:
 - `IS_DEV=false`. If this is missing, the process stays in development mode and falls back to SQLite on NFS.
 - `APP_SECRET` to a long random string (`python3 -c 'import secrets; print(secrets.token_hex(32))'`).
 - `DOMAIN=wdaudiolex-be.toolforge.org` so Swagger's server URL is the public host.
-- `CONSUMER_KEY` and `CONSUMER_SECRET` from a **Wikidata** OAuth consumer. The callback URL registered on that consumer is the frontend's `/oauth-callback`, because the API only returns `redirect_string` and the browser returns to the frontend.
+- `CONSUMER_KEY` and `CONSUMER_SECRET` from a **Wikidata** OAuth consumer. The callback registered on that consumer is `https://wdaudiolex-api.toolforge.org/api/oauth-callback`. `GET /api/oauth-callback` redirects the browser to `PROD_FE_URL/oauth-callback` and keeps the query string. The frontend then POSTs the stored request token to `/api/oauth-callback`.
 - `TOOL_CONTACT` to a page or address that identifies the operator. Wikimedia expects that in the User-Agent.
 
 `PORT` is unused once uWSGI is serving the app. The proxy sends traffic to port 8000 inside the pod.

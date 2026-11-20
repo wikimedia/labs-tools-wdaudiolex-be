@@ -73,6 +73,7 @@ Prefix `/api` from env. User-Agent on every Wikimedia request.
 | --- | --- | --- | --- |
 | GET | `/health` | no | Liveness |
 | GET | `/auth/login` | no | OAuth redirect + request token |
+| GET | `/oauth-callback` | no | Redirect the browser to the frontend `/oauth-callback` |
 | POST | `/oauth-callback` | no | JWT |
 | POST | `/auth/logout` | yes | Invalidate token |
 | GET | `/languages` | no | Localized `iso`, `iso3`, `qid`, `commons_category` |

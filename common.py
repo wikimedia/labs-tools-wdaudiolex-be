@@ -10,6 +10,11 @@ def _as_bool(value, default=True):
     return str(value).strip().lower() in ("1", "true", "yes", "on")
 
 
+def _nonempty(value, default):
+    text = "" if value is None else str(value).strip()
+    return text or default
+
+
 class ENVIRONMENT:
     def __init__(self):
         root = os.path.dirname(os.path.abspath(__file__))
@@ -29,8 +34,12 @@ class ENVIRONMENT:
             "APP_SECRET", "changeme-dev-jwt-secret-key-32b"
         )
         self.is_dev = _as_bool(os.getenv("IS_DEV"), True)
-        self.dev_fe_url = os.getenv("DEV_FE_URL", "http://localhost:3000")
-        self.prod_fe_url = os.getenv("PROD_FE_URL", "")
+        self.dev_fe_url = _nonempty(
+            os.getenv("DEV_FE_URL"), "http://localhost:3000"
+        )
+        self.prod_fe_url = _nonempty(
+            os.getenv("PROD_FE_URL"), "https://wdaudiolex.toolforge.org"
+        )
         self.auth_base_url = os.getenv(
             "OAUTH_BASE_URL", "https://www.wikidata.org")
         self.commons_image_base_url = os.getenv(
@@ -77,6 +86,12 @@ JWT_EXPIRY_MINUTES = 45
 
 def jwt_secret():
     return app_secret or "changeme-dev-jwt-secret-key-32b"
+
+
+def frontend_origin():
+    """Browser origin that owns /oauth-callback. No trailing slash."""
+    raw = dev_fe_url if is_dev else prod_fe_url
+    return (raw or "").strip().rstrip("/")
 
 
 def swagger_server_url():

@@ -57,6 +57,31 @@
       }
     },
     "/oauth-callback": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Redirect the browser to the frontend OAuth callback",
+        "description": "Callback registered on the Wikidata consumer. The response redirects to the frontend /oauth-callback and keeps the query string. The token exchange is the POST.",
+        "parameters": [
+          {
+            "name": "oauth_token",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "oauth_verifier",
+            "in": "query",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to the frontend /oauth-callback"
+          },
+          "503": {
+            "description": "Frontend origin is not configured"
+          }
+        }
+      },
       "post": {
         "tags": ["auth"],
         "summary": "Exchange OAuth verifier for a JWT",

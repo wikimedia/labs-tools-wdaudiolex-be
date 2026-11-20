@@ -19,6 +19,8 @@ class TestSwagger(unittest.TestCase):
         self.assertIn("/file/url/{titles}", payload["paths"])
         self.assertIn("/match-lexemes", payload["paths"])
         self.assertIn("/auth/login", payload["paths"])
+        self.assertIn("get", payload["paths"]["/oauth-callback"])
+        self.assertIn("post", payload["paths"]["/oauth-callback"])
         self.assertIn("/lexeme/audio/add", payload["paths"])
         self.assertIn("/contributions", payload["paths"])
         self.assertTrue(payload["servers"][0]["url"].endswith("/api"))

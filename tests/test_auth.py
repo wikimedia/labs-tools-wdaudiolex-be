@@ -49,6 +49,58 @@ class TestAuthRoutes(DbTestCase, unittest.TestCase):
         self.assertTrue(payload["token"])
         self.assertIsNotNone(UserModel.query.filter_by(username="Ada").first())
 
+    @patch(
+        "service.resources.auth.auth.frontend_origin",
+        return_value="https://wdaudiolex.toolforge.org",
+    )
+    def test_get_callback_redirects_to_frontend(self, _origin):
+        response = self.client.get(
+            "/api/oauth-callback?oauth_verifier=xyz&oauth_token=abc",
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"],
+            "https://wdaudiolex.toolforge.org/oauth-callback"
+            "?oauth_verifier=xyz&oauth_token=abc",
+        )
+        self.assertEqual(response.headers["Cache-Control"], "no-store")
+
+    @patch(
+        "service.resources.auth.auth.frontend_origin",
+        return_value="http://localhost:3000",
+    )
+    def test_get_callback_without_verifier_still_leaves_the_api(self, _origin):
+        response = self.client.get("/api/oauth-callback")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"],
+            "http://localhost:3000/oauth-callback",
+        )
+
+    @patch(
+        "service.resources.auth.auth.frontend_origin",
+        return_value="javascript:alert(1)",
+    )
+    def test_get_callback_rejects_a_bad_frontend_origin(self, _origin):
+        response = self.client.get(
+            "/api/oauth-callback?oauth_verifier=xyz&oauth_token=abc",
+        )
+        self.assertEqual(response.status_code, 503)
+
+    @patch(
+        "service.resources.auth.auth.frontend_origin",
+        return_value="https://wdaudiolex.toolforge.org",
+    )
+    def test_callback_location_rejects_header_injection(self, _origin):
+        from werkzeug.exceptions import BadRequest
+
+        from service.resources.auth.auth import _frontend_callback_location
+
+        with self.assertRaises(BadRequest):
+            _frontend_callback_location(
+                "oauth_token=abc\r\nLocation: https://evil.example"
+            )
+
     def test_logout_invalidates_token(self):
         user = make_user()
         token = make_jwt(user)
